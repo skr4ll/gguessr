@@ -18,7 +18,7 @@ fun ScreenStandardGame(navController: NavController) {
     val viewModel: StandardGameVM = viewModel()
     val position by viewModel.position.collectAsState()
     val cameraPositionState by viewModel.cameraPositionState.collectAsState()
-
+    // TEST
     StreetView(
         cameraPositionState = cameraPositionState,
         streetViewPanoramaOptionsFactory = {
