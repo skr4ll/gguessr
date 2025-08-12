@@ -14,12 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.Alignment
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScreenMainMenu(navController: NavHostController)
+fun ScreenMainMenu(navController: NavController)
 {
     // Scaffold bietet eine Grundstruktur für die Auteilung eines Screens
     Scaffold(
@@ -42,10 +42,14 @@ fun ScreenMainMenu(navController: NavHostController)
         )
 
         {
-            Button(onClick = {println("IHR WOLLT MEINEN SCHWANZ? DEN KÖNNT IHR HABEN")}){
-                Text("ficken")
+            Button(onClick = { println("IwAs") })
+            {
+                Text("test")
             }
-
+            Button(onClick = { navController.navigate("standardgame")})
+            {
+                Text("Standardspiel")
+            }
         }
     }
 }

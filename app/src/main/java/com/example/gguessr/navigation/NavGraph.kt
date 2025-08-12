@@ -9,6 +9,7 @@ import com.example.gguessr.ui.theme.GguessrTheme
 import com.example.gguessr.screens.*
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.gguessr.viewmodels.StandardGameVM
 
 
 @Composable
@@ -16,11 +17,15 @@ fun NavGraph(navController: NavHostController)
 {
     NavHost(navController = navController, startDestination = "mainmenu")
     {
-        // Startpunkt der App: ScreenMainMenu() -- Das Hauptmenü
-            composable("mainmenu")
-            {
-                ScreenMainMenu(navController)
-            }
-
+        // Startpunkt der App: HomeView.ScreenMainMenu() -- Das Hauptmenü
+        composable("mainmenu")
+        {
+            ScreenMainMenu(navController)
+        }
+        // Singleplayer normal
+        composable("standardgame")
+        {
+            ScreenStandardGame(navController)
+        }
     }
 }
