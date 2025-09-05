@@ -10,8 +10,10 @@ import com.example.gguessr.screens.*
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.gguessr.viewmodels.StandardGameVM
+import com.google.maps.android.ktx.MapsExperimentalFeature
 
 
+@OptIn(MapsExperimentalFeature::class)
 @Composable
 fun NavGraph(navController: NavHostController)
 {
