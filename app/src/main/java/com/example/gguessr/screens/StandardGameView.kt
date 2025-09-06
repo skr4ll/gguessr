@@ -1,7 +1,9 @@
 package com.example.gguessr.screens
 
+import android.R
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,13 +13,16 @@ import androidx.compose.material3.*
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.gguessr.viewmodels.GamePhase
 import com.example.gguessr.viewmodels.StandardGameVM
 import com.example.gguessr.viewmodels.totalRounds
@@ -29,24 +34,29 @@ import com.google.maps.android.compose.*
 import com.google.maps.android.compose.streetview.StreetView
 import com.google.maps.android.ktx.MapsExperimentalFeature
 
-@Composable
-@Preview
-fun ScoreScreen(){
-    Text("sdfsdf")
-}
 
+
+//@OptIn(MapsExperimentalFeature::class)
+//@Preview
+//@Composable
+//fun Preview(){
+//    ScreenStandardGame(rememberNavController(), GamePhase.End)
+//}
+
+@Preview
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(MapsExperimentalFeature::class, ExperimentalMaterial3Api::class)
 @MapsExperimentalFeature
 @Composable
-fun ScreenStandardGame(navController: NavController) {
+fun ScreenStandardGame() {
     val vm: StandardGameVM = viewModel()
-    val phase by vm.phase.collectAsState()
+//    var phase by vm.phase.collectAsState()
     val round by vm.round.collectAsState()
     val score by vm.score.collectAsState()
     val currentLocation by vm.currentLocation.collectAsState()
     val guessPosition by vm.guessPosition.collectAsState()
-
+    // Test der endphase, später zurück ändern
+    var phase = GamePhase.End
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Runde $round/$totalRounds --- Score: $score") })
@@ -80,9 +90,7 @@ fun ScreenStandardGame(navController: NavController) {
                 }
 
                 GamePhase.End -> {
-                    Button(onClick = { navController.navigate("mainmenu") }) {
-                        Text("Zum Hauptmenü")
-                    }
+                    Text(text = "Spiel beendet")
                 }
             }
         }
@@ -146,15 +154,25 @@ fun ScreenStandardGame(navController: NavController) {
             }
             GamePhase.End -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
+                    modifier = Modifier.fillMaxSize().background(Color.Cyan),
                     contentAlignment = Alignment.Center
+
+
                 ) {
-                    Text(
-                        text = "Spiel beendet!\nDein Score: $score",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = "Spiel beendet!\n\tDein Score: $score",
+                            style = MaterialTheme.typography.headlineMedium
+
+                        )
+                        Button( onClick = { println("testing") }) {
+                            Text("Zum Hauptmenü")
+
+                        }
+                    }
                 }
             }
         }
