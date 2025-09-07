@@ -1,10 +1,8 @@
 package com.example.gguessr.data
 
-import androidx.compose.ui.platform.LocalView
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 
+// TO BE DELETED
 object LocationRepository {
     val locations = listOf(
         Location("Uni Köln", "Am Philosphikum", LatLng(50.92894992179465, 6.927461350615642)),

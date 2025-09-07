@@ -1,8 +1,10 @@
 package com.example.gguessr.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.gguessr.data.Database
 import com.example.gguessr.data.Location
+import com.example.gguessr.data.LoggedInPlayer
 import com.example.gguessr.util.Utils.CalculateScore
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +46,8 @@ class StandardGameVM : ViewModel() {
                 _currentLocation.value = locations[currentIndex]
             }
         }
-        println(locations)
+        Log.i("--> LOCATION-INFO", "Loaded Locations: $locations")
+        Log.i("--> PLAYER-INFO", "The player: \"${LoggedInPlayer.playerName}\" is logged in")
     }
 
     fun startGuessing() {

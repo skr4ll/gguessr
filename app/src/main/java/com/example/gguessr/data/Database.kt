@@ -2,6 +2,9 @@ package com.example.gguessr.data
 
 import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 
 object Database {
@@ -28,5 +31,32 @@ object Database {
             .addOnFailureListener {
                 onResult(emptyList())
             }
+    }
+
+    fun loginPlayer(name: String, password: String, onResult: (Boolean) -> Unit) {
+        val playersRef = db.child("players")
+
+        // Suche alle Spieler nach dem Namen ab
+        playersRef.orderByChild("name").equalTo(name)
+            .addListenerForSingleValueEvent(object: ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        // Es gibt einen Spieler mit dem Namen
+                        for (child in snapshot.children) {
+                            val dbPassword = child.child("password").getValue(String::class.java)
+                            if (dbPassword == password) {
+                                onResult(true)   // Login erfolgreich
+                                return
+                            }
+                        }
+                        onResult(false) // Name stimmt, Passwort falsch
+                    } else {
+                        onResult(false) // Spielername existiert nicht
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    onResult(false)
+                }
+            })
     }
 }
