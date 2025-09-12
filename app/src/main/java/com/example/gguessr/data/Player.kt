@@ -5,7 +5,7 @@ data class Player(
     val name: String
 )
 
-// Dieser String erhält den Namen des Spielers der sich erfolgreich gegen die Datenbank eingeloggt hat
+// Dieser String erhält den Namen des Spielers, der sich erfolgreich gegen die Datenbank eingeloggt hat
 object LoggedInPlayer {
     var playerName: String? = null
 }

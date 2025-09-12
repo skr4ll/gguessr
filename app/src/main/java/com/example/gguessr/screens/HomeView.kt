@@ -49,6 +49,10 @@ fun ScreenMainMenu(navController: NavController)
             {
                 Text("Standardspiel")
             }
+            Button(onClick = { navController.navigate("highscores")})
+            {
+                Text("Highscores")
+            }
         }
     }
 }

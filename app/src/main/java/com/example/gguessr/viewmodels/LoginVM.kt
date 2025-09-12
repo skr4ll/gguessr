@@ -1,7 +1,9 @@
 package com.example.gguessr.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.gguessr.data.Database
+import com.example.gguessr.data.Highscore
 import com.example.gguessr.data.LoggedInPlayer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,8 +15,7 @@ class LoginVM : ViewModel() {
 
 //    private val _playerName = MutableStateFlow<String?>(null)
 //    val playerName = _playerName.asStateFlow()
-
-    fun attemptLogin(name: String, password: String) {
+     fun attemptLogin(name: String, password: String) {
         Database.loginPlayer(name, password) { success ->
             if (success) {
                 _loginSuccess.value = true

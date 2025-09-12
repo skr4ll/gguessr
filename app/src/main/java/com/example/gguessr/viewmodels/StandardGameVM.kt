@@ -37,10 +37,9 @@ class StandardGameVM : ViewModel() {
     private val totalRounds = 5
 
     init {
-        // Locations aus Repository laden
-        Database.getLocations { locs ->
+        // Locations aus Datenbank laden
+        Database.rewriteGetLocations { locs ->
             locations = locs.toMutableList()
-
             if (locations.isNotEmpty()) {
                 currentIndex = Random.nextInt(locations.size)
                 _currentLocation.value = locations[currentIndex]
@@ -88,7 +87,7 @@ class StandardGameVM : ViewModel() {
     }
 
     fun newGame() {
-        Database.getLocations { locs ->
+        Database.rewriteGetLocations { locs ->
             locations = locs.toMutableList()
             currentIndex = Random.nextInt(locations.size)
             _currentLocation.value = locations[currentIndex]
