@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -53,6 +54,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.googleMaps)
     implementation(libs.mapsCompose)
+    //implementation(libs.androidx.material3.jvmstubs)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -60,7 +62,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2")) // aktuelle BOM Version
+    implementation("com.google.firebase:firebase-database-ktx")
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
 }
 // API-KEY
 secrets {

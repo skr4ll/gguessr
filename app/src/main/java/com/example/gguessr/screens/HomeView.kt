@@ -11,13 +11,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.navigation.NavController
+import com.example.gguessr.data.LoggedInPlayer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,13 +42,20 @@ fun ScreenMainMenu(navController: NavController)
         )
 
         {
-            Button(onClick = { println("IwAs") })
-            {
-                Text("test")
-            }
             Button(onClick = { navController.navigate("standardgame")})
             {
-                Text("Standardspiel")
+                Text("Standardspiel (lokal)")
+            }
+            Button(onClick = {
+                LoggedInPlayer.rankedGameStarted = true
+                navController.navigate("rankedstandardgame")
+            })
+            {
+                Text("Standardspiel ranked (online scores)")
+            }
+            Button(onClick = { navController.navigate("highscores")})
+            {
+                Text("Highscores")
             }
         }
     }
