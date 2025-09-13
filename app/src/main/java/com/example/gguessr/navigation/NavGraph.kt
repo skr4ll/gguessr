@@ -42,5 +42,9 @@ fun NavGraph(navController: NavHostController)
         {
             ScreenHighscores()
         }
+        composable("proposelocation")
+        {
+            ScreenProposeLoc()
+        }
     }
 }

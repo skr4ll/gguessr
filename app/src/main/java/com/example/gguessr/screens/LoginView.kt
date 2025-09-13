@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,7 +33,7 @@ import kotlin.math.log
 @Composable
 
 fun ScreenLogin(navController: NavController ) {
-    val vm: LoginVM= viewModel()
+    val vm: LoginVM = viewModel()
     var password = remember { mutableStateOf("") }
     var player = remember { mutableStateOf("") }
     val loginSuccess by vm.loginSuccess.collectAsState()
@@ -46,7 +47,7 @@ fun ScreenLogin(navController: NavController ) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
-        OutlinedTextField(
+        TextField(
             value = player.value,
             onValueChange = { player.value = it },
             label = { Text("Name") },
@@ -54,7 +55,7 @@ fun ScreenLogin(navController: NavController ) {
             singleLine = true,
         )
 
-        OutlinedTextField(
+        TextField(
             value = password.value,
             onValueChange = { password.value = it },
             //modifier = Modifier.padding(16.dp),

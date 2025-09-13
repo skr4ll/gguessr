@@ -11,9 +11,10 @@ import com.google.firebase.database.database
 object Database {
     private val db = Firebase.database.reference
     private val highscoresRef = db.child("highscore")
+    private val locationsRef = db.child("locations")
+    private val proplocsRef = db.child("proplocs")
 
-    fun rewriteGetLocations(onResult: (List<Location>) -> Unit){
-        val locationsRef = db.child("locations")
+    fun getLocations(onResult: (List<Location>) -> Unit){
         locationsRef.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 // Die Klasse DatabaseLocation enthält zwei separate float Felder für die GPS-Position
@@ -23,7 +24,6 @@ object Database {
                 // Beim Umwandeln in die Klasse Locations müssen wir diese beiden Felder zu einem einzigen LatLng Objekt machen
                 val locationsList = dblocationsList.map { dbLoc ->
                     Location(
-                        name = dbLoc.name,
                         description = dbLoc.description,
                         position = dbLoc.toLatLng()
                     )
@@ -35,7 +35,15 @@ object Database {
             }
         })
     }
-
+    fun createProposedLocation(propLoc: DatabaseLocation){
+        val key = proplocsRef.push().key
+        proplocsRef.child(key.toString()).setValue(propLoc)
+            .addOnSuccessListener {
+            }
+            .addOnFailureListener { e ->
+                Log.e("gguessr-DB", e.message.toString())
+            }
+    }
     fun loginPlayer(name: String, password: String, onResult: (Boolean) -> Unit) {
         val playersRef = db.child("players")
         val query = playersRef.orderByChild("name").equalTo(name)

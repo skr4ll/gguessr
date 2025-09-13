@@ -2,6 +2,8 @@ package com.example.gguessr.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.example.gguessr.data.Database
+import com.example.gguessr.data.DatabaseLocation
+import com.example.gguessr.data.Location
 import com.example.gguessr.data.LoggedInPlayer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -42,7 +42,7 @@ class StandardGameVM : ViewModel() {
 
     init {
         // Locations aus Datenbank laden
-        Database.rewriteGetLocations { locs ->
+        Database.getLocations { locs ->
             locations = locs.toMutableList()
             if (locations.isNotEmpty()) {
                 currentIndex = Random.nextInt(locations.size)
@@ -106,7 +106,7 @@ class StandardGameVM : ViewModel() {
     }
 
     fun newGame() {
-        Database.rewriteGetLocations { locs ->
+        Database.getLocations { locs ->
             locations = locs.toMutableList()
             currentIndex = Random.nextInt(locations.size)
             _currentLocation.value = locations[currentIndex]

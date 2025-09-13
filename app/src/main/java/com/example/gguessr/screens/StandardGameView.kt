@@ -159,7 +159,7 @@ fun ScreenStandardGame(navController: NavController) {
                         Marker(
                             state = MarkerState(position = currentLocation!!.position),
                             title = "Richtiger Ort",
-                            snippet = currentLocation?.name,
+                            snippet = currentLocation?.description,
                             icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
                         )
                     }

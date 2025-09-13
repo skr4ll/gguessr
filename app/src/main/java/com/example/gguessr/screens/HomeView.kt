@@ -57,6 +57,10 @@ fun ScreenMainMenu(navController: NavController)
             {
                 Text("Highscores")
             }
+            Button(onClick = { navController.navigate("proposelocation")})
+            {
+                Text("Ort vorschlagen!")
+            }
         }
     }
 }
