@@ -3,12 +3,16 @@ package com.example.gguessr.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.gguessr.data.Database
+import com.example.gguessr.data.Highscore
 import com.example.gguessr.data.Location
 import com.example.gguessr.data.LoggedInPlayer
 import com.example.gguessr.util.Utils.CalculateScore
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 enum class GamePhase { StreetView, Guessing, Result, End }
@@ -45,8 +49,6 @@ class StandardGameVM : ViewModel() {
                 _currentLocation.value = locations[currentIndex]
             }
         }
-        Log.i("--> LOCATION-INFO", "Loaded Locations: $locations")
-        Log.i("--> PLAYER-INFO", "The player: \"${LoggedInPlayer.playerName}\" is logged in")
     }
 
     fun startGuessing() {
@@ -69,6 +71,20 @@ class StandardGameVM : ViewModel() {
         _phase.value = GamePhase.Result
     }
 
+    fun compareAndUpdateHighscore(){
+        if (score.value > LoggedInPlayer.currentHighscore){
+            val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+            val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+            val newHS = Highscore(
+                LocalDate.now().format(dateFormatter),
+                LocalTime.now().format(timeFormatter),
+                LoggedInPlayer.playerName.toString(),
+                score.value
+                )
+            Database.createOrUpdateHighscore(newHS, LoggedInPlayer.playerId)
+        }
+    }
+
     fun nextRound() {
         if (_round.value < totalRounds && locations.isNotEmpty()) {
             // Aktuelle Location aus der Liste entfernen
@@ -83,6 +99,9 @@ class StandardGameVM : ViewModel() {
             _round.value++
         } else {
             _phase.value = GamePhase.End
+            if (LoggedInPlayer.rankedGameStarted){
+                compareAndUpdateHighscore()
+            }
         }
     }
 

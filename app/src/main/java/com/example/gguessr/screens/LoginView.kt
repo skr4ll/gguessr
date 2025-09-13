@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.gguessr.data.LoggedInPlayer
 import com.example.gguessr.viewmodels.LoginVM
 import kotlin.math.log
 
@@ -34,48 +35,46 @@ fun ScreenLogin(navController: NavController ) {
     val vm: LoginVM= viewModel()
     var password = remember { mutableStateOf("") }
     var player = remember { mutableStateOf("") }
-    var loginTap = remember { mutableStateOf(false) }
     val loginSuccess by vm.loginSuccess.collectAsState()
+    val loginMessage by vm.loginMessage.collectAsState()
+
 //    val playerName by vm.playerName.collectAsState()
     val context = LocalContext.current
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-
-
+        verticalArrangement = Arrangement.Center
     ){
         OutlinedTextField(
             value = player.value,
             onValueChange = { player.value = it },
             label = { Text("Name") },
-            placeholder = { Text("Player") },
+            placeholder = { Text("Name") },
             singleLine = true,
         )
 
         OutlinedTextField(
             value = password.value,
             onValueChange = { password.value = it },
-            modifier = Modifier.padding(16.dp),
+            //modifier = Modifier.padding(16.dp),
             label = { Text("Passwort") },
             singleLine = true,
-            placeholder = { Text("Password") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            placeholder = { Text("Passwort") },
 
         )
 
         Button(onClick = {
-            vm.attemptLogin(player.value, password.value)
-            loginTap.value = true
+            vm.attemptLogin(player.value, password.value) { success ->
+                if (success) {
+                    Toast.makeText(context, "Hi ${LoggedInPlayer.playerName}", Toast.LENGTH_SHORT).show()
+                    navController.navigate("mainmenu")
+                } else {
+                    Toast.makeText(context, "Falsche Daten!", Toast.LENGTH_SHORT).show()
+                }
+            }
         }) {
             Text("Login")
-        }
-        LaunchedEffect(loginTap.value) {
-            if (!loginSuccess && loginTap.value) {
-                Toast.makeText(context, "Falsche Daten!", Toast.LENGTH_LONG).show()
-                loginTap.value = false
-            }
         }
 
         // ToDo Auf Registrierungsseite verweisen

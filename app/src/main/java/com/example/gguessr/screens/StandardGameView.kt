@@ -5,7 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.gguessr.data.LoggedInPlayer
 import com.example.gguessr.viewmodels.GamePhase
 import com.example.gguessr.viewmodels.StandardGameVM
 import com.example.gguessr.viewmodels.totalRounds
@@ -66,11 +69,22 @@ fun ScreenStandardGame(navController: NavController) {
                     }
 
                     GamePhase.Guessing -> {
-                        Button(
-                            onClick = { vm.submitGuess() },
-                            enabled = guessPosition != null
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            Text("Tipp bestätigen")
+                            Button(
+                                onClick = { vm.returnToStreetView() },
+                                modifier = Modifier.padding(1.dp)
+                            ) {
+                                Text("StreetView")
+                            }
+                            Button(
+                                onClick = { vm.submitGuess() },
+                                enabled = guessPosition != null,
+                                modifier = Modifier.padding(1.dp)
+                            ) {
+                                Text("Tipp bestätigen")
+                            }
                         }
                     }
 
@@ -168,7 +182,10 @@ fun ScreenStandardGame(navController: NavController) {
                                 Text("Nochmal")
 
                             }
-                            Button(onClick = { navController.navigate("mainmenu") }) {
+                            Button(onClick = {
+                                LoggedInPlayer.rankedGameStarted = false
+                                navController.navigate("mainmenu")
+                            }) {
                                 Text("Zum Hauptmenü")
                             }
                         }

@@ -17,15 +17,20 @@ import com.google.maps.android.ktx.MapsExperimentalFeature
 @Composable
 fun NavGraph(navController: NavHostController)
 {
-    NavHost(navController = navController, startDestination = "mainmenu")
+    NavHost(navController = navController, startDestination = "login")
     {
         // Startpunkt der App: HomeView.ScreenMainMenu() -- Das Hauptmenü
         composable("mainmenu")
         {
             ScreenMainMenu(navController)
         }
-        // Singleplayer normal
+        // Singleplayer normal (lokales Spiel)
         composable("standardgame")
+        {
+            ScreenStandardGame(navController)
+        }
+        // Singleplayer ranked (Punkte gehen online in die DB)
+        composable("rankedstandardgame")
         {
             ScreenStandardGame(navController)
         }
