@@ -13,6 +13,7 @@ object Database {
     private val highscoresRef = db.child("highscore")
     private val locationsRef = db.child("locations")
     private val proplocsRef = db.child("proplocs")
+    private val playersRef = db.child("players")
 
     fun getLocations(onResult: (List<Location>) -> Unit){
         locationsRef.addListenerForSingleValueEvent(object: ValueEventListener {
@@ -45,7 +46,6 @@ object Database {
             }
     }
     fun loginPlayer(name: String, password: String, onResult: (Boolean) -> Unit) {
-        val playersRef = db.child("players")
         val query = playersRef.orderByChild("name").equalTo(name)
         query.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -72,8 +72,32 @@ object Database {
             }
         })
     }
-    fun createPlayer(name: String, password: String){
-        TODO("DO IT")
+
+
+    fun createPlayer(name: String, password: String, onResult: (Boolean) -> Unit){
+        val query = playersRef.orderByChild("name").equalTo(name)
+        val newPlayer = Player(name, password)
+
+        query.addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Spielername existiert noch nicht: Kann angelegt werden
+                if(!snapshot.exists()){
+                    val key = playersRef.push().key
+                    playersRef.child(key.toString()).setValue(newPlayer)
+                    // Neuen Spieler direkt einloggen
+                    LoggedInPlayer.playerId = key.toString()
+                    LoggedInPlayer.playerName = name
+                    onResult(true)
+                }
+                // Spielername existiert bereits
+                else{
+                    onResult(false)
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                onResult(false)
+            }
+        })
     }
     fun getHighscores(onResult: (List<Highscore>) -> Unit){
         // Hier: object: Erstelle eine Instanz einer anon Klasse, die das Interface ValueEventListener implementiert

@@ -1,8 +1,8 @@
 package com.example.gguessr.data
 
 data class Player(
-    val id: String,
-    val name: String
+    val name: String,
+    val password: String
 )
 
 // Dieser String erhält den Namen und die ID des Spielers, der sich erfolgreich gegen die Datenbank eingeloggt hat.

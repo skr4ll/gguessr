@@ -30,11 +30,13 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun RowScope.TableCell(
     text: String,
-    weight: Float
+    weight: Float,
+    textColor: Color = Color.Unspecified
 ) {
     Text(
         text = text,
-        Modifier
+        color = textColor,
+        modifier = Modifier
             .border(1.dp, Color.Black)
             .weight(weight)
             .padding(8.dp)
@@ -45,8 +47,7 @@ fun RowScope.TableCell(
 fun ScreenHighscores(){
     val vm: HighscoresVM = viewModel()
     val highscores by vm.highscores.collectAsState()
-    val columnWeight = .33f // 30%
-    val DATE_PATTERN = "MM/dd/yyyy"
+    val columnWeight = .25f // 25%
 
     if (highscores.isEmpty()){
         // Daten sind noch nicht geladen. Wir warten auf die Antwort der DB
@@ -63,6 +64,7 @@ fun ScreenHighscores(){
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(Modifier.background(Color.Gray)) {
+                    TableCell(text = "Mode", weight = columnWeight)
                     TableCell(text = "Name", weight = columnWeight)
                     TableCell(text = "Punkte", weight = columnWeight)
                     TableCell(text = "Datum", weight = columnWeight)
@@ -70,7 +72,10 @@ fun ScreenHighscores(){
             }
             // Here are all the lines of your table.
             items(highscores) { hs ->
+//                val rowColor = if (hs.mode == "normal") Color(0xFFD0F0C0) // hellgrün
+//                else Color(0xFFFFCCCB) // hellrot
                 Row(Modifier.fillMaxWidth()) {
+                    TableCell(text = hs.mode, weight = columnWeight, textColor = if (hs.mode == "timed") Color(0xFFFFD700) else Color.White)
                     TableCell(text = hs.who, weight = columnWeight)
                     TableCell(text = hs.score.toString(), weight = columnWeight)
                     TableCell(text = hs.date, weight = columnWeight)

@@ -29,11 +29,6 @@ fun NavGraph(navController: NavHostController)
         {
             ScreenStandardGame(navController)
         }
-        // Singleplayer ranked (Punkte gehen online in die DB)
-        composable("rankedstandardgame")
-        {
-            ScreenStandardGame(navController)
-        }
         composable("login")
         {
             ScreenLogin(navController)
@@ -45,6 +40,10 @@ fun NavGraph(navController: NavHostController)
         composable("proposelocation")
         {
             ScreenProposeLoc()
+        }
+        composable("register")
+        {
+            ScreenRegister(navController)
         }
     }
 }

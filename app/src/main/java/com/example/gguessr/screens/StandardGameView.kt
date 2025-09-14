@@ -50,6 +50,7 @@ fun ScreenStandardGame(navController: NavController) {
     val score by vm.score.collectAsState()
     val currentLocation by vm.currentLocation.collectAsState()
     val guessPosition by vm.guessPosition.collectAsState()
+    val timeLeft by vm.timeLeft.collectAsState()
 
     // Siehe else Block. Hier steigen wir nur ein wenn es bereits eine  currentLocation gibt.
     if (currentLocation != null) {
@@ -57,6 +58,13 @@ fun ScreenStandardGame(navController: NavController) {
             topBar = {
                 Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
                     TopAppBar(title = { Text("Runde $round/$totalRounds --- Score: $score") })
+                    if (LoggedInPlayer.timedGameStarted) {
+                        Text(
+                            text = "Zeit: ${timeLeft}s",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = if (timeLeft <= 10) Color.Red else Color.Black
+                        )
+                    }
                 }
 
             },
@@ -184,6 +192,7 @@ fun ScreenStandardGame(navController: NavController) {
                             }
                             Button(onClick = {
                                 LoggedInPlayer.rankedGameStarted = false
+                                LoggedInPlayer.timedGameStarted = false
                                 navController.navigate("mainmenu")
                             }) {
                                 Text("Zum Hauptmenü")

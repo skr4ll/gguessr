@@ -46,13 +46,23 @@ fun ScreenMainMenu(navController: NavController)
             {
                 Text("Standardspiel (lokal)")
             }
+
             Button(onClick = {
                 LoggedInPlayer.rankedGameStarted = true
-                navController.navigate("rankedstandardgame")
+                navController.navigate("standardgame")
             })
             {
                 Text("Standardspiel ranked (online scores)")
             }
+
+            Button(onClick = {
+                LoggedInPlayer.timedGameStarted = true
+                navController.navigate("standardgame")
+            })
+            {
+                Text("Standardspiel timed+ranked (online scores, timer)")
+            }
+
             Button(onClick = { navController.navigate("highscores")})
             {
                 Text("Highscores")
