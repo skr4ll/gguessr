@@ -17,7 +17,7 @@ import com.google.maps.android.ktx.MapsExperimentalFeature
 @Composable
 fun NavGraph(navController: NavHostController)
 {
-    NavHost(navController = navController, startDestination = "login")
+    NavHost(navController = navController, startDestination = "tutorial")
     {
         // Startpunkt der App: HomeView.ScreenMainMenu() -- Das Hauptmenü
         composable("mainmenu")
@@ -44,6 +44,10 @@ fun NavGraph(navController: NavHostController)
         composable("register")
         {
             ScreenRegister(navController)
+        }
+        composable("tutorial")
+        {
+            ScreenTutorial()
         }
     }
 }

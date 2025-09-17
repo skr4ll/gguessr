@@ -44,7 +44,7 @@ fun ScreenMainMenu(navController: NavController)
         {
             Button(onClick = { navController.navigate("standardgame")})
             {
-                Text("Standardspiel (lokal)")
+                Text("Lokales Spiel")
             }
 
             Button(onClick = {
@@ -52,7 +52,7 @@ fun ScreenMainMenu(navController: NavController)
                 navController.navigate("standardgame")
             })
             {
-                Text("Standardspiel ranked (online scores)")
+                Text("Ranked")
             }
 
             Button(onClick = {
@@ -60,7 +60,7 @@ fun ScreenMainMenu(navController: NavController)
                 navController.navigate("standardgame")
             })
             {
-                Text("Standardspiel timed+ranked (online scores, timer)")
+                Text("Zeitlimit")
             }
 
             Button(onClick = { navController.navigate("highscores")})
@@ -70,6 +70,10 @@ fun ScreenMainMenu(navController: NavController)
             Button(onClick = { navController.navigate("proposelocation")})
             {
                 Text("Ort vorschlagen!")
+            }
+            Button(onClick = { navController.navigate("tutorial")})
+            {
+                Text("Tutorial")
             }
         }
     }

@@ -25,9 +25,9 @@ class Utils(){
             val distance = distanceInKm(guess, actual)
 
             val maxScore = 5000
-            val steepness = 0.001  // bestimmt, wie stark der Score abfällt
+            val steepness = 0.0005  // bestimmt, wie stark der Score abfällt
 
-            // Sigmoid-artige Kurve
+            // Sigmoid-artige Kurve, um den finalen score zu erhalten
             val score = (maxScore / (1 + steepness * distance * distance)).toInt()
 
             return score.coerceAtLeast(0)

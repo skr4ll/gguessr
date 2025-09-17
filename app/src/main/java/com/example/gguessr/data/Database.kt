@@ -72,8 +72,6 @@ object Database {
             }
         })
     }
-
-
     fun createPlayer(name: String, password: String, onResult: (Boolean) -> Unit){
         val query = playersRef.orderByChild("name").equalTo(name)
         val newPlayer = Player(name, password)

@@ -9,9 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController
 import com.example.gguessr.navigation.NavGraph
 import com.example.gguessr.ui.theme.GguessrTheme
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-
 
 class MainActivity : ComponentActivity()
 {
