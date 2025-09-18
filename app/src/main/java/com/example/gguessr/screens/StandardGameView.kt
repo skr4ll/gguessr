@@ -58,10 +58,7 @@ fun ScreenStandardGame(navController: NavController) {
     if (currentLocation != null) {
         // Back-Button abfangen
         BackHandler {
-            if (LoggedInPlayer.timedGameStarted) {
-                vm.stopTimer()
-                LoggedInPlayer.timedGameStarted = false
-            }
+            vm.resetGameVM()
             navController.navigate("mainmenu") {
                 popUpTo("mainmenu") { inclusive = true }
             }
@@ -204,9 +201,7 @@ fun ScreenStandardGame(navController: NavController) {
                                     Text("Nochmal")
                                 }
                                 Button(onClick = {
-                                    if (LoggedInPlayer.timedGameStarted) {vm.stopTimer()}
-                                    LoggedInPlayer.rankedGameStarted = false
-                                    LoggedInPlayer.timedGameStarted = false
+                                    vm.resetGameVM()
                                     navController.navigate("mainmenu")
                                 }) {
                                     Text("Zum Hauptmenü")

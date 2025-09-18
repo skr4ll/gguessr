@@ -51,8 +51,6 @@ class StandardGameVM : ViewModel() {
 
     private var timerJob: Job? = null
 
-    private val totalRounds = 5
-
     init {
         // Locations aus Datenbank laden
         Database.getLocations { locs ->
@@ -95,7 +93,7 @@ class StandardGameVM : ViewModel() {
         if (score.value > LoggedInPlayer.currentHighscore){
             var gameType = "normal"
             if(LoggedInPlayer.timedGameStarted){ gameType = "timed" }
-            val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+            val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yy")
             val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
             val newHS = Highscore(
                 LocalDate.now().format(dateFormatter),
@@ -109,6 +107,7 @@ class StandardGameVM : ViewModel() {
     }
 
     fun nextRound() {
+        // Solangen noch eine nächste Runde existiert
         if (_round.value < totalRounds && locations.isNotEmpty()) {
             // Aktuelle Location aus der Liste entfernen
             locations.removeAt(currentIndex)
@@ -120,12 +119,21 @@ class StandardGameVM : ViewModel() {
             _guessPosition.value = null
             _phase.value = GamePhase.StreetView
             _round.value++
-        } else {
+        }
+        // Letzte Runde ist gepielt worden, also:
+        else {
             _phase.value = GamePhase.End
-            if (LoggedInPlayer.rankedGameStarted){
+            if (LoggedInPlayer.rankedGameStarted || LoggedInPlayer.timedGameStarted){
                 compareAndUpdateHighscore()
             }
         }
+    }
+    fun resetGameVM(){
+        if (LoggedInPlayer.timedGameStarted) {
+            stopTimer()
+            LoggedInPlayer.timedGameStarted = false
+        }
+        LoggedInPlayer.rankedGameStarted = false
     }
 
     fun newGame() {

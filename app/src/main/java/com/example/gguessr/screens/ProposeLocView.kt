@@ -72,7 +72,7 @@ fun ScreenProposeLoc(navController: NavController){
             placeholder = { Text("Beschreibung") },
             singleLine = true,
         )
-        Spacer(modifier = Modifier.fillMaxHeight(0.1f))
+        Spacer(modifier = Modifier.fillMaxHeight(0.01f))
         TextField(
             value = lat.value,
             onValueChange = { lat.value = it },
@@ -81,7 +81,7 @@ fun ScreenProposeLoc(navController: NavController){
             singleLine = true,
             placeholder = { Text("Breitengrad") },
             )
-        Spacer(modifier = Modifier.fillMaxHeight(0.1f))
+        Spacer(modifier = Modifier.fillMaxHeight(0.01f))
         TextField(
             value = lon.value,
             onValueChange = { lon.value = it },
@@ -90,7 +90,7 @@ fun ScreenProposeLoc(navController: NavController){
             singleLine = true,
             placeholder = { Text("Längengrad") },
         )
-        Spacer(modifier = Modifier.fillMaxHeight(0.1f))
+        Spacer(modifier = Modifier.fillMaxHeight(0.01f))
         if (errText.value.isNotEmpty()) {
             Text(
                 text = errText.value,

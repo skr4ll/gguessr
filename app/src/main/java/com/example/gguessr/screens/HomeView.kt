@@ -56,7 +56,7 @@ fun ScreenMainMenu(navController: NavController) {
             ) {
                 Text("GGuessr", style = MaterialTheme.typography.headlineMedium, color = textColor,
                     fontSize = 50.sp, fontWeight = FontWeight.ExtraBold,)
-                Spacer(modifier = Modifier.fillMaxHeight(0.4f))
+                Spacer(modifier = Modifier.fillMaxHeight(0.25f))
                 // Obere Buttons: Die Spielvarianten
                 FilledTonalButton(onClick = {
                     navController.navigate("standardgame")
@@ -78,7 +78,7 @@ fun ScreenMainMenu(navController: NavController) {
                     Text("Zeitlimit" , color = textColor, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold )
                 }
 
-                Spacer(modifier = Modifier.fillMaxHeight(0.5f))
+                Spacer(modifier = Modifier.fillMaxHeight(0.45f))
                 // Untere Buttons: Zusätzliche Funktionen
                 FilledTonalButton(onClick = {
                     navController.navigate("highscores")

@@ -19,14 +19,13 @@ class Utils(){
             val c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
             return earthRadius * c
-            println("DISTANCE IN KM KM KM: ${earthRadius * c}");
         }
 
         fun calculateScore(guess: LatLng, actual: LatLng): Int {
             val distance = distanceInKm(guess, actual)
 
             val maxScore = 5000
-            val steepness = 0.0005  // bestimmt, wie stark der Score abfällt
+            val steepness = 0.0001  // bestimmt, wie stark der Score abfällt
 
             // Sigmoid-artige Kurve, um den finalen score zu erhalten
             val score = (maxScore / (1 + steepness * distance * distance)).toInt()

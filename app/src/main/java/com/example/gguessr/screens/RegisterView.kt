@@ -47,6 +47,7 @@ fun ScreenRegister(navController: NavController ) {
         Image(
             painter = painterResource(id = R.drawable.worldmap),
             contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
         Column(
@@ -61,7 +62,7 @@ fun ScreenRegister(navController: NavController ) {
                 placeholder = { Text("Name") },
                 singleLine = true,
             )
-            Spacer(modifier = Modifier.fillMaxHeight(0.02f))
+            Spacer(modifier = Modifier.fillMaxHeight(0.01f))
             TextField(
                 value = password.value,
                 onValueChange = { password.value = it },
@@ -70,7 +71,7 @@ fun ScreenRegister(navController: NavController ) {
                 placeholder = { Text("Passwort") },
 
                 )
-            Spacer(modifier = Modifier.fillMaxHeight(0.02f))
+            Spacer(modifier = Modifier.fillMaxHeight(0.01f))
             Button(onClick = {
                 vm.attemptRegister(player.value, password.value) { success ->
                     if (success) {
