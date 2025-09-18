@@ -1,6 +1,7 @@
 package com.example.gguessr.screens
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,6 +56,17 @@ fun ScreenStandardGame(navController: NavController) {
     val timeLeft by vm.timeLeft.collectAsState()
 
     if (currentLocation != null) {
+        // Back-Button abfangen
+        BackHandler {
+            if (LoggedInPlayer.timedGameStarted) {
+                vm.stopTimer()
+                LoggedInPlayer.timedGameStarted = false
+            }
+            navController.navigate("mainmenu") {
+                popUpTo("mainmenu") { inclusive = true }
+            }
+        }
+
         Scaffold(
             topBar = {
                 Column(
@@ -70,7 +82,7 @@ fun ScreenStandardGame(navController: NavController) {
                         Text(
                             text = "Zeit: ${timeLeft}s",
                             style = MaterialTheme.typography.titleLarge,
-                            color = if (timeLeft <= 10) Color.Red else Color.Black
+                            color = if (timeLeft <= 10) Color.Red else Color.Green
                         )
                     }
                 }
@@ -192,6 +204,7 @@ fun ScreenStandardGame(navController: NavController) {
                                     Text("Nochmal")
                                 }
                                 Button(onClick = {
+                                    if (LoggedInPlayer.timedGameStarted) {vm.stopTimer()}
                                     LoggedInPlayer.rankedGameStarted = false
                                     LoggedInPlayer.timedGameStarted = false
                                     navController.navigate("mainmenu")
