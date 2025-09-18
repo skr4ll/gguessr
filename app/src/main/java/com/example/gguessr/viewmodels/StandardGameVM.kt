@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 enum class GamePhase { StreetView, Guessing, Result, End }
@@ -38,6 +39,9 @@ class StandardGameVM : ViewModel() {
 
     private val _score = MutableStateFlow(0)
     val score = _score.asStateFlow()
+
+    private val _deviation = MutableStateFlow(0.0)
+    val deviation = _deviation.asStateFlow()
 
     private val _guessPosition = MutableStateFlow<LatLng?>(null)
     val guessPosition = _guessPosition.asStateFlow()
@@ -79,6 +83,10 @@ class StandardGameVM : ViewModel() {
         val guess = _guessPosition.value ?: return
         val actual = _currentLocation.value?.position ?: return
         val points = CalculateScore.calculateScore(guess, actual)
+        // Erhalte und summiere die Abweichungen zwischen Tipp und richtiger Location
+        _deviation.value += CalculateScore.distanceInKm(guess, actual)
+        // Schnelles runden auf 2 Nachkommastellen
+        _deviation.value = (_deviation.value * 100).roundToInt() / 100.0
         _score.value += points
         _phase.value = GamePhase.Result
     }
