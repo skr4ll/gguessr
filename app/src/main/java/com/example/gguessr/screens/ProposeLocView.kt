@@ -99,19 +99,27 @@ fun ScreenProposeLoc(navController: NavController){
             )
         }
         Button(onClick = {
-            var d = description.value; var la = lat.value; var lo =  lon.value
+            val d = description.value.trim()
+            val la = lat.value.trim()
+            val lo = lon.value.trim()
 
-            if (d.isNotEmpty() && la.isNotEmpty() && lo.isNotEmpty()) {
-                vm.proposeLoc(d, la.toDouble(), lo.toDouble())
-                description.value = ""
-                lat.value = ""
-                lon.value = ""
-                errText.value = ""
+            val latDouble = la.toDoubleOrNull()
+            val lonDouble = lo.toDoubleOrNull()
+
+            if (d.isNotEmpty() && latDouble != null && lonDouble != null) {
+                if (latDouble in -90.0..90.0 && lonDouble in -180.0..180.0) {
+                    vm.proposeLoc(d, latDouble, lonDouble)
+                    description.value = ""
+                    lat.value = ""
+                    lon.value = ""
+                    errText.value = ""
+                } else {
+                    errText.value = "Breiten- oder Längengrad außerhalb des gültigen Bereichs!"
+                }
             } else {
-                errText.value = "Eingaben prüfen!"
+                errText.value = "Ungültige Eingabe! Bitte Zahlen verwenden."
             }
-        }
-        ) {
+        }) {
             Text("Vorschlagen")
         }
         Button(onClick = {navController.navigate("mainmenu")}) {

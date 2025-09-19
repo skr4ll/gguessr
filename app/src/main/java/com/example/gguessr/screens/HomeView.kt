@@ -32,6 +32,12 @@ import com.example.gguessr.data.LoggedInPlayer
 @Composable
 fun ScreenMainMenu(navController: NavController) {
     val textColor = if (isSystemInDarkTheme()) Color.White else Color.Black
+    BackHandler {
+        navController.navigate("mainmenu") {
+            popUpTo("mainmenu") { inclusive = true }
+        }
+    }
+
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier

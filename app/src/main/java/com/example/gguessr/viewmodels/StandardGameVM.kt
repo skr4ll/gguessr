@@ -123,6 +123,7 @@ class StandardGameVM : ViewModel() {
         // Letzte Runde ist gepielt worden, also:
         else {
             _phase.value = GamePhase.End
+            stopTimer()
             if (LoggedInPlayer.rankedGameStarted || LoggedInPlayer.timedGameStarted){
                 compareAndUpdateHighscore()
             }

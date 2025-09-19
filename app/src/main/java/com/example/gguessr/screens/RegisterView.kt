@@ -73,21 +73,31 @@ fun ScreenRegister(navController: NavController ) {
                 )
             Spacer(modifier = Modifier.fillMaxHeight(0.01f))
             Button(onClick = {
-                vm.attemptRegister(player.value, password.value) { success ->
-                    if (success) {
-                        Toast.makeText(
-                            context,
-                            "${LoggedInPlayer.playerName} wurde registriert",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        navController.navigate("mainmenu")
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Spielername existiert bereits!",
-                            Toast.LENGTH_SHORT
-                        ).show()
+
+                if (player.value.isNotEmpty() && password.value.isNotEmpty()) {
+                    vm.attemptRegister(player.value, password.value) { success ->
+                        if (success) {
+                            Toast.makeText(
+                                context,
+                                "${LoggedInPlayer.playerName} wurde registriert",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            navController.navigate("mainmenu")
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Spielername existiert bereits!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
+                }
+                else{
+                    Toast.makeText(
+                        context,
+                        "Name/PW leer!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             })
             {
