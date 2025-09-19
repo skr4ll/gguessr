@@ -1,12 +1,14 @@
 package com.example.gguessr.screens
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,154 +50,169 @@ fun ScreenStandardGame(navController: NavController) {
     val phase by vm.phase.collectAsState()
     val round by vm.round.collectAsState()
     val score by vm.score.collectAsState()
+    val deviation by vm.deviation.collectAsState()
     val currentLocation by vm.currentLocation.collectAsState()
     val guessPosition by vm.guessPosition.collectAsState()
+    val timeLeft by vm.timeLeft.collectAsState()
 
-    // Siehe else Block. Hier steigen wir nur ein wenn es bereits eine  currentLocation gibt.
     if (currentLocation != null) {
+        // Back-Button abfangen
+        BackHandler {
+            vm.resetGameVM()
+            navController.navigate("mainmenu") {
+                popUpTo("mainmenu") { inclusive = true }
+            }
+        }
+
         Scaffold(
             topBar = {
-                Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    TopAppBar(title = { Text("Runde $round/$totalRounds --- Score: $score") })
+                Column(
+                    Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    TopAppBar(
+                        title = {
+                            Text("$round/$totalRounds Runden - Score: $score - Abweichung: $deviation km")
+                        }
+                    )
+                    if (LoggedInPlayer.timedGameStarted) {
+                        Text(
+                            text = "Zeit: ${timeLeft}s",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = if (timeLeft <= 10) Color.Red else Color.Green
+                        )
+                    }
                 }
-
-            },
-            bottomBar = {
+            }
+        ) { innerPadding ->
+            Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
                 when (phase) {
                     GamePhase.StreetView -> {
-                        Button(onClick = { vm.startGuessing() }) {
-                            Text("Ort tippen")
+                        StreetView(
+                            streetViewPanoramaOptionsFactory = {
+                                StreetViewPanoramaOptions().position(currentLocation?.position)
+                                    .streetNamesEnabled(false)
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 100.dp), // Abstand nach oben
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Button(onClick = { vm.startGuessing() }) {
+                                Text("Ort tippen")
+                            }
                         }
                     }
 
                     GamePhase.Guessing -> {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        GoogleMap(
+                            modifier = Modifier.fillMaxSize(),
+                            onMapClick = { latLng -> vm.setGuess(latLng) }
                         ) {
-                            Button(
-                                onClick = { vm.returnToStreetView() },
-                                modifier = Modifier.padding(1.dp)
-                            ) {
-                                Text("StreetView")
+                            guessPosition?.let { guess ->
+                                Marker(state = MarkerState(position = guess), title = "Dein Tipp")
                             }
-                            Button(
-                                onClick = { vm.submitGuess() },
-                                enabled = guessPosition != null,
-                                modifier = Modifier.padding(1.dp)
-                            ) {
-                                Text("Tipp bestätigen")
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 100.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Button(onClick = { vm.returnToStreetView() }) {
+                                    Text("StreetView")
+                                }
+                                Button(
+                                    onClick = { vm.submitGuess() },
+                                    enabled = guessPosition != null
+                                ) {
+                                    Text("Tipp bestätigen")
+                                }
                             }
                         }
                     }
 
                     GamePhase.Result -> {
-                        if (round == totalRounds) {
-                            Button(onClick = { vm.nextRound() }) {
-                                Text("Beenden")
+                        GoogleMap(
+                            modifier = Modifier.fillMaxSize(),
+                            cameraPositionState = rememberCameraPositionState {
+                                position = CameraPosition.fromLatLngZoom(
+                                    currentLocation!!.position,
+                                    10f
+                                )
                             }
-                        } else {
+                        ) {
+                            guessPosition?.let { guess ->
+                                Marker(
+                                    state = MarkerState(position = guess),
+                                    title = "Dein Tipp",
+                                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                                )
+
+                                Polyline(
+                                    points = listOf(guess, currentLocation!!.position),
+                                    color = Color.Red,
+                                    width = 5f
+                                )
+                            }
+
+                            Marker(
+                                state = MarkerState(position = currentLocation!!.position),
+                                title = "Richtiger Ort",
+                                snippet = currentLocation?.description,
+                                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                            )
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 100.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             Button(onClick = { vm.nextRound() }) {
-                                Text("Nächste Runde")
+                                Text(if (round == totalRounds) "Beenden" else "Nächste Runde")
                             }
                         }
                     }
 
                     GamePhase.End -> {
-                        println("aaaaa")
-                    }
-                }
-            }
-        ) {
-            when (phase) {
-                GamePhase.StreetView -> {
-                    StreetView(
-                        streetViewPanoramaOptionsFactory = {
-                            StreetViewPanoramaOptions().position(currentLocation?.position)
-                        }
-                    )
-                }
-
-                GamePhase.Guessing -> {
-                    GoogleMap(
-                        modifier = Modifier.fillMaxSize(),
-                        onMapClick = { latLng: LatLng ->
-                            vm.setGuess(latLng)
-                        }
-                    ) {
-                        guessPosition?.let { guess ->
-                            Marker(
-                                state = MarkerState(position = guess),
-                                title = "Dein Tipp"
-                            )
-                        }
-                    }
-                }
-
-                GamePhase.Result -> {
-                    GoogleMap(
-                        modifier = Modifier.fillMaxSize(),
-                        cameraPositionState = rememberCameraPositionState {
-                            position =
-                                CameraPosition.fromLatLngZoom(currentLocation!!.position, 10f)
-                        }
-                    ) {
-                        // Spieler-Tipp (blauer Marker)
-                        guessPosition?.let { guess ->
-                            Marker(
-                                state = MarkerState(position = guess),
-                                title = "Dein Tipp",
-                                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
-                            )
-
-                            // Polyline zwischen Tipp und richtiger Location
-                            Polyline(
-                                points = listOf(guess, currentLocation!!.position),
-                                color = Color.Red,
-                                width = 5f
-                            )
-                        }
-
-                        // Richtiger Ort (grüner Marker)
-                        Marker(
-                            state = MarkerState(position = currentLocation!!.position),
-                            title = "Richtiger Ort",
-                            snippet = currentLocation?.name,
-                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-                        )
-                    }
-                }
-
-                GamePhase.End -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize().background(Color.DarkGray),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.DarkGray),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "Spiel beendet!\n\tDein Score: $score",
-                                style = MaterialTheme.typography.headlineMedium
-                            )
-                            Button(onClick = { vm.newGame() }) {
-                                Text("Nochmal")
-
-                            }
-                            Button(onClick = {
-                                LoggedInPlayer.rankedGameStarted = false
-                                navController.navigate("mainmenu")
-                            }) {
-                                Text("Zum Hauptmenü")
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(10.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                Text(
+                                    text = "Spiel beendet!\n\tDein Score: $score",
+                                    style = MaterialTheme.typography.headlineMedium
+                                )
+                                Button(onClick = { vm.newGame() }) {
+                                    Text("Nochmal")
+                                }
+                                Button(onClick = {
+                                    vm.resetGameVM()
+                                    navController.navigate("mainmenu")
+                                }) {
+                                    Text("Zum Hauptmenü")
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
-    else{
-        // Daten sind noch nicht geladen. Wir warten auf die Antwort der DB
+    } else {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

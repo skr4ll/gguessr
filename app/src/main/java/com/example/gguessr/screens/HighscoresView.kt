@@ -1,6 +1,7 @@
 package com.example.gguessr.screens
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -26,28 +28,45 @@ import com.example.gguessr.data.Highscore
 import com.example.gguessr.viewmodels.HighscoresVM
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
+import com.example.gguessr.R
 
 @Composable
 fun RowScope.TableCell(
     text: String,
-    weight: Float
+    weight: Float,
+    textColor: Color = Color.Unspecified,
+    backgroundColor: Color = Color.DarkGray
 ) {
     Text(
         text = text,
-        Modifier
-            .border(1.dp, Color.Black)
+        color = textColor,
+        modifier = Modifier
             .weight(weight)
+            .background(backgroundColor)
+            .border(1.dp, Color.Black)
             .padding(8.dp)
     )
 }
 
 @Composable
-fun ScreenHighscores(){
+fun ScreenHighscores(navController: NavController){
     val vm: HighscoresVM = viewModel()
     val highscores by vm.highscores.collectAsState()
-    val columnWeight = .33f // 30%
-    val DATE_PATTERN = "MM/dd/yyyy"
-
+    val columnWeight = .25f // 25%
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            // Hintergrundbild
+            Image(
+                painter = painterResource(id = R.drawable.worldmap),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
     if (highscores.isEmpty()){
         // Daten sind noch nicht geladen. Wir warten auf die Antwort der DB
         Box(
@@ -59,23 +78,30 @@ fun ScreenHighscores(){
     }
     else {
         LazyColumn(Modifier.fillMaxSize().padding(16.dp)) {
-            // Here is the header
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(Modifier.background(Color.Gray)) {
+                    TableCell(text = "Mode", weight = columnWeight)
                     TableCell(text = "Name", weight = columnWeight)
                     TableCell(text = "Punkte", weight = columnWeight)
                     TableCell(text = "Datum", weight = columnWeight)
                 }
             }
-            // Here are all the lines of your table.
             items(highscores) { hs ->
                 Row(Modifier.fillMaxWidth()) {
-                    TableCell(text = hs.who, weight = columnWeight)
-                    TableCell(text = hs.score.toString(), weight = columnWeight)
-                    TableCell(text = hs.date, weight = columnWeight)
+                    TableCell(text = hs.mode, weight = columnWeight, textColor = if (hs.mode == "timed") Color(0xFFFFD700) else Color.White)
+                    TableCell(text = hs.who, weight = columnWeight, textColor = if (hs.mode == "timed") Color(0xFFFFD700) else Color.White)
+                    TableCell(text = hs.score.toString(), weight = columnWeight, textColor = if (hs.mode == "timed") Color(0xFFFFD700) else Color.White)
+                    TableCell(text = hs.date, weight = columnWeight, textColor = if (hs.mode == "timed") Color(0xFFFFD700) else Color.White)
+                }
+            }
+            item{
+                Button(onClick = {navController.navigate("mainmenu")}) {
+                    Text("Zurück")
                 }
             }
         }
+        }
     }
 }
+

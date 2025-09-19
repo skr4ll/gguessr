@@ -2,17 +2,22 @@ package com.example.gguessr.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.gguessr.data.Database
 import com.example.gguessr.data.Highscore
 import com.example.gguessr.data.Location
 import com.example.gguessr.data.LoggedInPlayer
 import com.example.gguessr.util.Utils.CalculateScore
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 enum class GamePhase { StreetView, Guessing, Result, End }
@@ -35,18 +40,27 @@ class StandardGameVM : ViewModel() {
     private val _score = MutableStateFlow(0)
     val score = _score.asStateFlow()
 
+    private val _deviation = MutableStateFlow(0.0)
+    val deviation = _deviation.asStateFlow()
+
     private val _guessPosition = MutableStateFlow<LatLng?>(null)
     val guessPosition = _guessPosition.asStateFlow()
 
-    private val totalRounds = 5
+    private val _timeLeft = MutableStateFlow(60) // Start bei 60 Sekunden
+    val timeLeft = _timeLeft.asStateFlow()
+
+    private var timerJob: Job? = null
 
     init {
         // Locations aus Datenbank laden
-        Database.rewriteGetLocations { locs ->
+        Database.getLocations { locs ->
             locations = locs.toMutableList()
             if (locations.isNotEmpty()) {
                 currentIndex = Random.nextInt(locations.size)
                 _currentLocation.value = locations[currentIndex]
+                if (LoggedInPlayer.timedGameStarted){
+                    startTimer()
+                }
             }
         }
     }
@@ -67,25 +81,33 @@ class StandardGameVM : ViewModel() {
         val guess = _guessPosition.value ?: return
         val actual = _currentLocation.value?.position ?: return
         val points = CalculateScore.calculateScore(guess, actual)
+        // Erhalte und summiere die Abweichungen zwischen Tipp und richtiger Location
+        _deviation.value += CalculateScore.distanceInKm(guess, actual)
+        // Schnelles runden auf 2 Nachkommastellen
+        _deviation.value = (_deviation.value * 100).roundToInt() / 100.0
         _score.value += points
         _phase.value = GamePhase.Result
     }
 
     fun compareAndUpdateHighscore(){
         if (score.value > LoggedInPlayer.currentHighscore){
-            val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+            var gameType = "normal"
+            if(LoggedInPlayer.timedGameStarted){ gameType = "timed" }
+            val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yy")
             val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
             val newHS = Highscore(
                 LocalDate.now().format(dateFormatter),
                 LocalTime.now().format(timeFormatter),
                 LoggedInPlayer.playerName.toString(),
-                score.value
+                score.value,
+                gameType
                 )
             Database.createOrUpdateHighscore(newHS, LoggedInPlayer.playerId)
         }
     }
 
     fun nextRound() {
+        // Solangen noch eine nächste Runde existiert
         if (_round.value < totalRounds && locations.isNotEmpty()) {
             // Aktuelle Location aus der Liste entfernen
             locations.removeAt(currentIndex)
@@ -97,16 +119,26 @@ class StandardGameVM : ViewModel() {
             _guessPosition.value = null
             _phase.value = GamePhase.StreetView
             _round.value++
-        } else {
+        }
+        // Letzte Runde ist gepielt worden, also:
+        else {
             _phase.value = GamePhase.End
-            if (LoggedInPlayer.rankedGameStarted){
+            stopTimer()
+            if (LoggedInPlayer.rankedGameStarted || LoggedInPlayer.timedGameStarted){
                 compareAndUpdateHighscore()
             }
         }
     }
+    fun resetGameVM(){
+        if (LoggedInPlayer.timedGameStarted) {
+            stopTimer()
+            LoggedInPlayer.timedGameStarted = false
+        }
+        LoggedInPlayer.rankedGameStarted = false
+    }
 
     fun newGame() {
-        Database.rewriteGetLocations { locs ->
+        Database.getLocations { locs ->
             locations = locs.toMutableList()
             currentIndex = Random.nextInt(locations.size)
             _currentLocation.value = locations[currentIndex]
@@ -115,6 +147,29 @@ class StandardGameVM : ViewModel() {
             _score.value = 0
             _round.value = 1
             _guessPosition.value = null
+            if (LoggedInPlayer.timedGameStarted) {
+                startTimer()
+            }
         }
+    }
+    fun startTimer() {
+        // Falls schon ein Timer läuft, abbrechen
+        timerJob?.cancel()
+
+        timerJob = viewModelScope.launch {
+            _timeLeft.value = 60
+            while (_timeLeft.value > 0) {
+                delay(1000L)
+                _timeLeft.value = _timeLeft.value - 1
+            }
+            // Zeit abgelaufen → Spiel beenden
+            _phase.value = GamePhase.End
+            if (LoggedInPlayer.timedGameStarted) {
+                compareAndUpdateHighscore()
+            }
+        }
+    }
+    fun stopTimer() {
+        timerJob?.cancel()
     }
 }
